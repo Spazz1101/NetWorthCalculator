@@ -11,6 +11,9 @@ export default function Home () {
         getNetWorthData();
     }, []);
 
+    /**
+     * This function fetches the net worth data from the networth/GetData endpoint and then sets the sections state with that data.
+     */
     async function getNetWorthData () {
         const response = await fetch('./networth/GetData');
         const data = await response.json();
@@ -18,6 +21,10 @@ export default function Home () {
         setSections(data);
     }
 
+    /**
+     * This function sends the current sections values to be saved to the json file.
+     * @param {number} sectionIndex The section's index position
+     */
     async function saveNetWorthSection(sectionIndex) {
         await fetch('./networth/SaveSection?sectionIndex=' + sectionIndex, { method: 'POST', body: JSON.stringify(sections[sectionIndex]), headers: { 'Content-Type': 'application/json' } }).then((res) => {
             console.log("Hi")
@@ -25,79 +32,122 @@ export default function Home () {
         });
     }
 
-    function updateCategoryValue (value, sectionName, groupIndex, categoryIndex) {
+    /**
+     * This function updates a category's value.
+     * @param {number} value The category's new value
+     * @param {number} sectionIndex The section's index position
+     * @param {number} groupIndex The group's index position
+     * @param {number} categoryIndex The category's index position
+     */
+    function updateCategoryValue (value, sectionIndex, groupIndex, categoryIndex) {
+        // Copy the current sections state array
         let newSections = [...sections];
 
-        let section = newSections.filter((section) => section.Name === sectionName);
+        // Update the category with the new value
+        newSections[sectionIndex].Groups[groupIndex].Categories[categoryIndex].Value = value;
 
-        section[0].Groups[groupIndex].Categories[categoryIndex].Value = value;
-
+        // Update the sections state with the new array
         setSections(newSections);
 
+        // Recalculate the total values
         calculateTotals();
     }
 
+    /**
+     * This function recalculates the group and section totals and updates the sections state.
+     */
     function calculateTotals() {
-        var newSections = [...sections];
+        // Copy the current sections state array
+        let newSections = [...sections];
 
+        // Loop through each of the sections
         for (var i = 0; i < newSections.length; i++) {
-            // section in sections
+            // Variable to store the current section total
             let sectionTotal = 0;
 
+            // Loop through each of the groups
             for (var j = 0; j < newSections[i].Groups.length; j++) {
-                // var group in section.groups
+                // Variable to store the current group total
                 let groupTotal = 0;
 
+                // Loop through each of the categories and append their value to the group total
                 for (var k = 0; k < newSections[i].Groups[j].Categories.length; k++) {
+                    // Double check that the category's value is numeric
                     if (typeof newSections[i].Groups[j].Categories[k].Value === "number") {
                         groupTotal += newSections[i].Groups[j].Categories[k].Value;
                     }
                 }
 
+                // Set the new group total and append the group total to the section total
                 newSections[i].Groups[j].TotalValue = groupTotal;
-
                 sectionTotal += groupTotal;
             }
 
+            // Set the new section total
             newSections[i].TotalValue = sectionTotal;
         }
 
+        // Update the sections state with the new array
         setSections(newSections);
     }
 
+    /**
+     * This function adds a new group to a section.
+     * @param {number} sectionIndex The section's index position
+     * @param {string} groupName The name of the new group
+     */
     function addGroup(sectionIndex, groupName) {
+        // Copy the current sections state array
         let newSections = [...sections];
 
+        // Create a new group object to be added
         let newGroup = {
             "Name": groupName,
             "Categories": [],
             "TotalValue": 0
         };
 
+        // Append the new group to the section
         newSections[sectionIndex].Groups.push(newGroup);
 
+        // Update the sections state with the new array
         setSections(newSections);
     }
 
+    /**
+     * This function adds a new category to a group.
+     * @param {number} sectionIndex The section's index position
+     * @param {number} groupIndex The group's index position
+     * @param {string} categoryName The name of the new category
+     */
     function addCategory(sectionIndex, groupIndex, categoryName) {
+        // Copy the current sections state array
         let newSections = [...sections];
 
+        // Create a new category to be added
         let newCategory = {
             "Name": categoryName,
             "Value": 0
         };
 
+        // Append the new category to the group
         newSections[sectionIndex].Groups[groupIndex].Categories.push(newCategory);
 
+        // Update the sections state with the new array
         setSections(newSections);
     }
 
+    /**
+     * This function resets a sections values back to the last saved values for the section.
+     * @param {*} sectionName The section's name
+     * @param {*} sectionIndex The section's index position
+     */
     async function resetSectionForm(sectionName, sectionIndex) {
-        // Fetch the section from the json file
+        // Fetch the section to reset from the json file
         const response = await fetch('./networth/GetSection?sectionName=' + sectionName);
         const data = await response.json();
 
-        // Copy the sections state
+        // Copy the current sections state array
         let resetSections = [...sections];
 
         // Reset the section with the data fetched from the json file
