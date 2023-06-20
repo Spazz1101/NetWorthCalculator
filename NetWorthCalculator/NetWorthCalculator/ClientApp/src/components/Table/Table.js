@@ -5,12 +5,33 @@ export default function Table(props) {
     const [edit, setEdit] = React.useState(false);
     const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
     const updateCategoryValue = props.updateCategoryValue;
-    const saveNetWorthData = props.saveNetWorthData;
     const resetSectionForm = props.resetSectionForm;
     const addGroup = props.addGroup;
+    const addCategory = props.addCategory;
 
     function validateInput(e, sectionName, groupIndex, categoryIndex) {
-        updateCategoryValue(e, sectionName, groupIndex, categoryIndex);
+        // Get the current value from the input
+        let value = e.target.value;
+
+        // The default value for when the inputed value is not a number and is less than zero is 0
+        let validatedValue = 0;
+
+        // Check if the value is a float that is greater than or equal to 0
+        if (!isNaN(parseFloat(value)) && parseFloat(value) >= 0) {
+            // Get the index of the decimal place
+            let decimalIndex = value.indexOf(".");
+
+            // If the number contains more than 2 decimal places, then cut the extras off
+            if (decimalIndex !== -1 && decimalIndex + 3 < value.length) {
+                value = value.substring(0, decimalIndex + 3);
+            }
+
+            // Parse the string value into a float
+            validatedValue = parseFloat(value);
+        }
+
+        // Update the categories value
+        updateCategoryValue(validatedValue, sectionName, groupIndex, categoryIndex);
     }
 
     function toggleSectionEdit() {
@@ -27,18 +48,35 @@ export default function Table(props) {
 
     function submitChanges() {
         // Save the section changes
-        saveNetWorthData();
+        props.saveNetWorthSection(props.sectionIndex);
 
         // Toggle section out of edit
         toggleSectionEdit();
     }
 
-    function test() {
-        //let groupName = document.getElementById(props.sectionIndex + "_group");
+    function validateGroup(e) {
+        // Prevent default which is submitting the form
+        e.preventDefault();
+        let groupName = document.getElementById(props.sectionIndex + "_group");
 
-        //if (groupName !== undefined && groupName.value !== "") {
-        //    addGroup(props.sectionIndex, groupName.value);
-        //}
+        if (groupName !== undefined && groupName.value !== "") {
+            addGroup(props.sectionIndex, groupName.value);
+
+            groupName.value = "";
+        }
+    }
+
+    function validateCategory(e, groupIndex) {
+        // Prevent default which is submitting the form
+        e.preventDefault();
+
+        let categoryName = document.getElementById(props.sectionIndex + "_" + groupIndex +"_category");
+
+        if (categoryName !== undefined && categoryName.value !== "") {
+            addCategory(props.sectionIndex, groupIndex, categoryName.value);
+
+            categoryName.value = "";
+        }
     }
 
     return (
@@ -73,7 +111,7 @@ export default function Table(props) {
                                                                 :
                                                                     <React.Fragment>
                                                                         <span>$</span>
-                                                                        <input id={inputID} type="number" min="0" step="0.01" defaultValue={category.Value} onInput={(e) => validateInput(e, props.sectionData.Name, groupIndex, categoryIndex)} />
+                                                                        <input id={inputID} type="number" min="0" value={category.Value} onChange={(e) => validateInput(e, props.sectionData.Name, groupIndex, categoryIndex)} />
                                                                     </React.Fragment>
                                                             }
                                                         </td>
@@ -86,8 +124,8 @@ export default function Table(props) {
                                             <tr className="newCategory">
                                                 <td colSpan="2">
                                                     <div>
-                                                        <input id={props.sectionIndex + "_category"} type="text" />
-                                                        <button className="addButton" onClick={(e) => test()}>Add Category</button>
+                                                        <input id={props.sectionIndex + "_" + groupIndex + "_category"} type="text" />
+                                                        <button className="addButton" onClick={(e) => validateCategory(e, groupIndex)}>Add Category</button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -101,7 +139,7 @@ export default function Table(props) {
                                     <td colSpan="2">
                                         <div>
                                             <input id={props.sectionIndex + "_group"} type="text" />
-                                            <button className="addButton" onClick={(e) => test()}>Add Group</button>
+                                            <button className="addButton" onClick={(e) => validateGroup(e)}>Add Group</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -141,7 +179,7 @@ export default function Table(props) {
                 {
                     !edit &&
                     <div className="rightGroup">
-                        <button className="saveButton" onClick={(e) => saveNetWorthData()}>Save</button>
+                        <button className="saveButton" onClick={(e) => props.saveNetWorthSection(props.sectionIndex)}>Save</button>
                         <button className="resetButton" onClick={(e) => resetSectionForm(props.sectionData.Name, props.sectionIndex)}>Reset</button>
                     </div>
                 }

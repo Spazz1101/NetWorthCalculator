@@ -18,28 +18,23 @@ export default function Home () {
         setSections(data);
     }
 
-    async function saveNetWorthData() {
-        console.log(sections)
-        await fetch('./networth/SaveData', { method: 'POST', body: JSON.stringify(sections), headers: { 'Content-Type': 'application/json' } }).then((res) => {
+    async function saveNetWorthSection(sectionIndex) {
+        await fetch('./networth/SaveSection?sectionIndex=' + sectionIndex, { method: 'POST', body: JSON.stringify(sections[sectionIndex]), headers: { 'Content-Type': 'application/json' } }).then((res) => {
             console.log("Hi")
             console.log(res)
         });
     }
 
-    function updateCategoryValue (event, sectionName, groupIndex, categoryIndex) {
-        let newValue = parseFloat(event.target.value);
+    function updateCategoryValue (value, sectionName, groupIndex, categoryIndex) {
+        let newSections = [...sections];
 
-        if (!isNaN(newValue)) {
-            let newSections = [...sections];
+        let section = newSections.filter((section) => section.Name === sectionName);
 
-            let section = newSections.filter((section) => section.Name === sectionName);
+        section[0].Groups[groupIndex].Categories[categoryIndex].Value = value;
 
-            section[0].Groups[groupIndex].Categories[categoryIndex].Value = newValue;
+        setSections(newSections);
 
-            setSections(newSections);
-
-            calculateTotals();
-        }
+        calculateTotals();
     }
 
     function calculateTotals() {
@@ -75,13 +70,24 @@ export default function Home () {
 
         let newGroup = {
             "Name": groupName,
-            "Categories": {}
+            "Categories": [],
+            "TotalValue": 0
         };
 
-        console.log("addGroup")
-        console.log(newSections[sectionIndex].Groups)
+        newSections[sectionIndex].Groups.push(newGroup);
 
-        newSections[sectionIndex].Groups.push(newGroup)
+        setSections(newSections);
+    }
+
+    function addCategory(sectionIndex, groupIndex, categoryName) {
+        let newSections = [...sections];
+
+        let newCategory = {
+            "Name": categoryName,
+            "Value": 0
+        };
+
+        newSections[sectionIndex].Groups[groupIndex].Categories.push(newCategory);
 
         setSections(newSections);
     }
@@ -115,7 +121,7 @@ export default function Home () {
                         <div className="sectionHeader">
                             <h3>{section.Name}</h3>
                         </div>
-                        <Table sectionData={section} sectionIndex={sectionIndex} updateCategoryValue={updateCategoryValue} saveNetWorthData={saveNetWorthData} resetSectionForm={resetSectionForm} addGroup={addGroup} />
+                        <Table sectionData={section} sectionIndex={sectionIndex} updateCategoryValue={updateCategoryValue} saveNetWorthSection={saveNetWorthSection} resetSectionForm={resetSectionForm} addGroup={addGroup} addCategory={addCategory} />
                     </div>
                 )
             }

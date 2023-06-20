@@ -97,5 +97,34 @@ namespace NetWorthCalculator.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPost("SaveSection")]
+        public IActionResult SaveSection([FromBody] Section netWorthSection, int sectionIndex)
+        {
+            List<Section> sections = GetJsonData();
+
+            if (sections != null)
+            {
+                sections[sectionIndex] = netWorthSection;
+
+                try
+                {
+                    // Get the path to the json data file
+                    string path = Path.Combine(_webHostEnvironment.ContentRootPath, "Data", "NetWorthData.json");
+
+                    string NetWorthDataText = JsonSerializer.Serialize(sections);
+                    System.IO.File.WriteAllText(path, NetWorthDataText);
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Error saving json data", ex);
+
+                    return NotFound();
+                }
+            }
+
+            return NotFound();
+        }
     }
 }
