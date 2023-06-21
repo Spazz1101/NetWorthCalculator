@@ -3,8 +3,12 @@ import Table from './Table/Table';
 import './NetWorthCalculator.css';
 
 export default function Home () {
+    /**
+     * The sections state stores the net worth json data.
+     * currencyFormatter is used for formatting a number as currency.
+     */
     const [sections, setSections] = React.useState([]);
-    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+    const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
     React.useEffect(() => {
         // Fetch the stored json data
@@ -94,6 +98,29 @@ export default function Home () {
     }
 
     /**
+     * This function resets a sections values back to the last saved values for the section.
+     * @param {*} sectionName The section's name
+     * @param {*} sectionIndex The section's index position
+     */
+    async function resetSectionForm(sectionName, sectionIndex) {
+        // Fetch the section to reset from the json file
+        const response = await fetch('./networth/GetSection?sectionName=' + sectionName);
+        const data = await response.json();
+
+        // Copy the current sections state array
+        let resetSections = [...sections];
+
+        // Reset the section with the data fetched from the json file
+        resetSections[sectionIndex] = data;
+
+        // Update the state with the reset section
+        setSections(resetSections);
+
+        // Reset the sections inputs
+        document.getElementById(sectionName + "Form").reset();
+    }
+
+    /**
      * This function adds a new group to a section.
      * @param {number} sectionIndex The section's index position
      * @param {string} groupName The name of the new group
@@ -137,29 +164,6 @@ export default function Home () {
 
         // Update the sections state with the new array
         setSections(newSections);
-    }
-
-    /**
-     * This function resets a sections values back to the last saved values for the section.
-     * @param {*} sectionName The section's name
-     * @param {*} sectionIndex The section's index position
-     */
-    async function resetSectionForm(sectionName, sectionIndex) {
-        // Fetch the section to reset from the json file
-        const response = await fetch('./networth/GetSection?sectionName=' + sectionName);
-        const data = await response.json();
-
-        // Copy the current sections state array
-        let resetSections = [...sections];
-
-        // Reset the section with the data fetched from the json file
-        resetSections[sectionIndex] = data;
-
-        // Update the state with the reset section
-        setSections(resetSections);
-
-        // Reset the sections inputs
-        document.getElementById(sectionName + "Form").reset();
     }
 
     /**
@@ -227,15 +231,15 @@ export default function Home () {
                             <tbody>
                                 <tr>
                                     <td className="label">Total Assets</td>
-                                    <td>{formatter.format(sections[0].TotalValue)}</td>
+                                    <td>{currencyFormatter.format(sections[0].TotalValue)}</td>
                                 </tr>
                                 <tr>
                                     <td className="label">&#8722; Total Liabilities</td>
-                                    <td>{formatter.format(sections[1].TotalValue)}</td>
+                                    <td>{currencyFormatter.format(sections[1].TotalValue)}</td>
                                 </tr>
                                 <tr>
                                     <td className="label"><b>Net Worth</b></td>
-                                    <td>{formatter.format(sections[0].TotalValue - sections[1].TotalValue)}</td>
+                                    <td>{currencyFormatter.format(sections[0].TotalValue - sections[1].TotalValue)}</td>
                                 </tr>
                             </tbody>
                         </table>

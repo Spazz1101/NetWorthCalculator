@@ -2,8 +2,12 @@
 import './Table.css';
 
 export default function Table(props) {
+    /**
+     * The edit state controls whether a section is in edit mode.
+     * currencyFormatter is used for formatting a number as currency.
+     */
     const [edit, setEdit] = React.useState(false);
-    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+    const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
     /**
      * This function validates the number input's value.
@@ -45,22 +49,22 @@ export default function Table(props) {
     }
 
     /**
-     * This function cancels the section edit changes.
-     */
-    function cancelChanges() {
-        // Reset any changes to the section structure
-        props.resetSectionForm(props.sectionData.Name, props.sectionIndex);
-
-        // Toggle section out of edit mode
-        toggleSectionEdit();
-    }
-
-    /**
      * This function submits the section's edited changes.
      */
     function submitChanges() {
         // Save the section changes
         props.saveNetWorthSection(props.sectionIndex);
+
+        // Toggle section out of edit mode
+        toggleSectionEdit();
+    }
+    
+    /**
+     * This function cancels the section edit changes.
+     */
+    function cancelChanges() {
+        // Reset any changes to the section structure
+        props.resetSectionForm(props.sectionData.Name, props.sectionIndex);
 
         // Toggle section out of edit mode
         toggleSectionEdit();
@@ -183,13 +187,13 @@ export default function Table(props) {
                                                         {
                                                             edit ?
                                                                 <React.Fragment>
-                                                                    <span className="displayInputValue">{formatter.format(category.Value)}</span>
+                                                                    <span className="displayInputValue">{currencyFormatter.format(category.Value)}</span>
                                                                     <button className="deleteButton" title="Delete Category" onClick={(e) => confirmCategoryDelete(e, props.sectionIndex, groupIndex, categoryIndex)}>X</button>
                                                                 </React.Fragment>
                                                             :
                                                                 <React.Fragment>
                                                                     <span>$</span>
-                                                                    <input type="number" autoComplete="off" min="0" value={category.Value} onChange={(e) => validateInput(e, groupIndex, categoryIndex)} />
+                                                                    <input id={props.sectionIndex + "_" + groupIndex + "_" + categoryIndex + "_value"} type="number" autoComplete="off" min="0" max="1000000000000" value={category.Value.toString()} onChange={(e) => validateInput(e, groupIndex, categoryIndex)} />
                                                                 </React.Fragment>
                                                         }
                                                     </td>
@@ -226,7 +230,7 @@ export default function Table(props) {
                                     <tr className="categoryTotalRow" key={index}>
                                         <td className="categoryTotalLabel">Total {group.Name}</td>
                                         <td className="categoryTotal">
-                                            <span>{formatter.format(group.TotalValue)}</span>
+                                            <span>{currencyFormatter.format(group.TotalValue)}</span>
                                         </td>
                                     </tr>
                                 )
@@ -234,7 +238,7 @@ export default function Table(props) {
                             <tr className="categoryFinalTotalRow">
                                 <td className="categoryTotalLabel">Total {props.sectionData.Name}</td>
                                 <td className="categoryTotal">
-                                    <span>{formatter.format(props.sectionData.TotalValue)}</span>
+                                    <span>{currencyFormatter.format(props.sectionData.TotalValue)}</span>
                                 </td>
                             </tr>
                         </tbody>
