@@ -1,42 +1,28 @@
-﻿.pageHeader, .sectionHeader {
-    text-align: center;
-}
+﻿/*
+    Page and Section Headers
+*/
 .pageHeader {
     padding: 10px 0 10px 0;
+    background-color: #e9e9e9;
+    text-align: center;
 }
 
-.pageHeader, .sectionContainer {
-    background-color: #e9e9e9;
+/*
+    Sections
+*/
+.sectionHeader {
+    text-align: center;
 }
 
 .sectionContainer {
-    padding: 5px;
+    padding: 5px 10px 5px 10px;
     margin-top: 15px;
     border-radius: 4px;
-    --bs-gutter-x: 1.5rem;
-    --bs-gutter-y: 0;
     width: 100%;
-    padding-right: calc(var(--bs-gutter-x) * 0.5);
-    padding-left: calc(var(--bs-gutter-x) * 0.5);
     margin-right: auto;
     margin-left: auto;
     overflow: auto;
-}
-
-.netWorthContainer table {
-    margin: auto;
-}
-
-.netWorthContainer table tr:last-child {
-    border-top: 1px solid black;
-}
-
-.netWorthContainer table td {
-    padding: 5px;
-}
-
-.netWorthContainer table td.label {
-    text-align: end;
+    background-color: #e9e9e9;
 }
 
 @media (min-width: 576px) {
@@ -58,43 +44,9 @@
     }
 }
 
-.buttonGroup {
-    display: flex;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.buttonGroup div {
-    width: 50%;
-}
-
-.buttonGroup .rightGroup {
-    text-align: end;
-}
-
-.buttonGroup button, .addButton {
-    border-radius: 4px;
-}
-
-.buttonGroup div button:not(:last-child) {
-    margin-right: 10px;
-}
-
-.saveButton {
-    background-color: #0d6efd;
-    color: white;
-}
-
-.resetButton {
-    background-color: #6c757d;
-    color: white;
-}
-
-.addButton {
-    background-color: #198754;
-    color: white;
-}
-
+/*
+    Section Totals
+*/
 .categoryTotalRow {
     border-bottom: 0 !important;
 }
@@ -104,5 +56,24 @@
 }
 
 .categoryTotal, .netWorthContainer tr td:last-child {
+    text-align: end;
+}
+
+/*
+    Net Worth Section
+*/
+.netWorthContainer table {
+    margin: auto;
+}
+
+.netWorthContainer table tr:last-child {
+    border-top: 1px solid black;
+}
+
+.netWorthContainer table td {
+    padding: 5px;
+}
+
+.netWorthContainer table td.label {
     text-align: end;
 }

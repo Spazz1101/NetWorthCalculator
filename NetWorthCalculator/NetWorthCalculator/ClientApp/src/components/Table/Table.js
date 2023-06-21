@@ -67,7 +67,7 @@ export default function Table(props) {
     }
 
     /**
-     * This function validates a new group and then adds it to a section.
+     * This function validates a new group name and if valid it then adds it to a section.
      * @param {Event} e The button's onClick event
      */
     function validateGroup(e) {
@@ -77,10 +77,16 @@ export default function Table(props) {
         // Get the new group input element
         let groupName = document.getElementById(props.sectionIndex + "_group");
 
-        // Make sure the input exists and then make sure the value is not empty before adding the group and reseting the inputs value
-        if (groupName !== undefined && groupName.value !== "") {
+        // Validate that the element exists, the value is not empty, and the group name doesn't already exist in the section.
+        if (groupName == null || groupName.value === "") {
+            window.alert("Group name cannot be empty");
+        } else if (props.sectionData.Groups.filter((group) => group.Name === groupName.value).length > 0) {
+            window.alert("A group with this name already exists in this section");
+        } else {
+            // Add the group to the section
             props.addGroup(props.sectionIndex, groupName.value);
 
+            // Reset the input value
             groupName.value = "";
         }
     }
@@ -97,10 +103,16 @@ export default function Table(props) {
         // Get the new category input element
         let categoryName = document.getElementById(props.sectionIndex + "_" + groupIndex +"_category");
 
-        // Make sure the input exists and then make sure the value is not empty before adding the caegory and reseting the inputs value
-        if (categoryName !== undefined && categoryName.value !== "") {
+        // Validate that the element exists, the value is not empty, and the category name doesn't already exist in the group.
+        if (categoryName == null || categoryName.value === "") {
+            window.alert("Category name cannot be empty");
+        } else if (props.sectionData.Groups[groupIndex].Categories.filter((category) => category.Name === categoryName.value).length > 0) {
+            window.alert("A category with this name already exists in this group");
+        } else {
+            // Add the category to the group
             props.addCategory(props.sectionIndex, groupIndex, categoryName.value);
 
+            // Reset the input value
             categoryName.value = "";
         }
     }
@@ -159,7 +171,7 @@ export default function Table(props) {
                                                 <span>{group.Name}</span>
                                                 {
                                                     edit &&
-                                                    <button className="deleteButton" onClick={(e) => confirmGroupDelete(e, props.sectionIndex, groupIndex)}>X</button>
+                                                    <button className="deleteButton" title="Delete Group" onClick={(e) => confirmGroupDelete(e, props.sectionIndex, groupIndex)}>X</button>
                                                 }
                                             </td>
                                         </tr>
@@ -167,17 +179,17 @@ export default function Table(props) {
                                             Object.keys(group.Categories).length > 0 && group.Categories.map((category, categoryIndex) =>
                                                 <tr className="categoryRow" key={categoryIndex}>
                                                     <td className="categoryName">{category.Name}</td>
-                                                    <td className="categoryInput">
+                                                    <td className="categoryInputContainer">
                                                         {
                                                             edit ?
                                                                 <React.Fragment>
                                                                     <span className="displayInputValue">{formatter.format(category.Value)}</span>
-                                                                    <button className="deleteButton" onClick={(e) => confirmCategoryDelete(e, props.sectionIndex, groupIndex, categoryIndex)}>X</button>
+                                                                    <button className="deleteButton" title="Delete Category" onClick={(e) => confirmCategoryDelete(e, props.sectionIndex, groupIndex, categoryIndex)}>X</button>
                                                                 </React.Fragment>
                                                             :
                                                                 <React.Fragment>
                                                                     <span>$</span>
-                                                                    <input type="number" min="0" value={category.Value} onChange={(e) => validateInput(e, groupIndex, categoryIndex)} />
+                                                                    <input type="number" autoComplete="off" min="0" value={category.Value} onChange={(e) => validateInput(e, groupIndex, categoryIndex)} />
                                                                 </React.Fragment>
                                                         }
                                                     </td>
@@ -189,8 +201,8 @@ export default function Table(props) {
                                             <tr className="newCategory">
                                                 <td colSpan="2">
                                                     <div>
-                                                        <input id={props.sectionIndex + "_" + groupIndex + "_category"} type="text" />
-                                                        <button className="addButton" onClick={(e) => validateCategory(e, groupIndex)}>Add Category</button>
+                                                        <input id={props.sectionIndex + "_" + groupIndex + "_category"} type="text" autoComplete="off" />
+                                                        <button className="addButton" title="Add Category" onClick={(e) => validateCategory(e, groupIndex)}>Add Category</button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -203,8 +215,8 @@ export default function Table(props) {
                                 <tr className="newGroup">
                                     <td colSpan="2">
                                         <div>
-                                            <input id={props.sectionIndex + "_group"} type="text" />
-                                            <button className="addButton" onClick={(e) => validateGroup(e)}>Add Group</button>
+                                            <input id={props.sectionIndex + "_group"} type="text" autoComplete="off" />
+                                            <button className="addButton" title="Add Group" onClick={(e) => validateGroup(e)}>Add Group</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -234,8 +246,8 @@ export default function Table(props) {
                     {
                         edit ?
                             <React.Fragment>
-                                <button className="saveButton" title="Submit Changes" onClick={(e) => submitChanges()}>Submit</button>
-                                <button className="resetButton" title="Cancel Changes" onClick={(e) => cancelChanges()}>Cancel</button>
+                                <button className="saveButton" title="Submit Section Changes" onClick={(e) => submitChanges()}>Submit</button>
+                                <button className="resetButton" title="Cancel Section Changes" onClick={(e) => cancelChanges()}>Cancel</button>
                             </React.Fragment>
                         :
                             <button className="addButton" title="Edit Section" onClick={(e) => toggleSectionEdit()}>Edit Section</button>
@@ -244,8 +256,8 @@ export default function Table(props) {
                 {
                     !edit &&
                     <div className="rightGroup">
-                        <button className="saveButton" onClick={(e) => props.saveNetWorthSection(props.sectionIndex)}>Save</button>
-                        <button className="resetButton" onClick={(e) => props.resetSectionForm(props.sectionData.Name, props.sectionIndex)}>Reset</button>
+                        <button className="saveButton" title="Save Section" onClick={(e) => props.saveNetWorthSection(props.sectionIndex)}>Save</button>
+                        <button className="resetButton" title="Reset Section to Last Save" onClick={(e) => props.resetSectionForm(props.sectionData.Name, props.sectionIndex)}>Reset</button>
                     </div>
                 }
             </div>

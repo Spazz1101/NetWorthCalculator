@@ -1,28 +1,48 @@
-﻿.tableContainer {
-
-}
-
+﻿/*
+    Base Table
+*/
 .tableContainer table {
     width: 100%;
 }
 
 .tableContainer thead {
     border-bottom: 1px solid black;
+    color: #0093ff;
 }
 
-.tableContainer thead {
-    color: #0093ff;
+.tableContainer tbody tr {
+    border-bottom: 1px solid black;
+    padding: 5px 0 5px 0;
 }
 
 .tableContainer th {
     padding-left: 5px;
 }
 
+.tableContainer th.inputColumn {
+    width: 35%;
+    min-width: 150px;
+}
+
+.tableContainer td {
+    padding: 5px;
+}
+
+/*
+    Table Groups
+*/
 .tableContainer .groupRow {
-    background-color: #9ed3f9 /*#cbcbcb*/;
+    background-color: #9ed3f9;
     font-weight: bold;
 }
 
+.tableContainer .groupRow button {
+    float: right;
+}
+
+/*
+    Table Categories
+*/
 .tableContainer td.categoryTotalLabel {
     text-align: end;
     font-weight: bold;
@@ -32,54 +52,79 @@
     border-bottom: 0;
 }
 
-.tableContainer tbody tr {
-    border-bottom: 1px solid black;
-    padding: 5px 0 5px 0;
+.tableContainer .categoryInputContainer {
+    display: flex;
 }
 
-.tableContainer td {
-    padding: 5px;
+.tableContainer .categoryInputContainer .displayInputValue {
+    width: 100%;
+    text-align: end;
+    margin-right: 10px;
 }
 
 .tableContainer .categoryRow input {
     width: 100%;
 }
 
-.tableContainer .categoryInput {
-    display: flex;
-}
-
-th.inputColumn {
-    width: 35%;
-    min-width: 150px;
-}
-
-.newCategory div, .newGroup div {
+/*
+    Table New Groups and Categories
+*/
+.tableContainer .newGroup div, .tableContainer .newCategory div {
     display: flex;
     width: 100%;
 }
 
-.newCategory input, .newGroup input {
+.tableContainer .newGroup input, .tableContainer .newCategory input {
     width: 100%;
     margin-right: 10px;
 }
 
-.newCategory button, .newGroup button {
+.tableContainer .newGroup button, .tableContainer .newCategory button {
     min-width: 120px;
 }
 
-
-.displayInputValue {
+/*
+    Button Group
+*/
+.buttonGroup {
+    display: flex;
     width: 100%;
+    margin-top: 10px;
+}
+
+.buttonGroup div {
+    width: 50%;
+}
+
+.buttonGroup .rightGroup {
     text-align: end;
+}
+
+.buttonGroup div button:not(:last-child) {
     margin-right: 10px;
+}
+
+/*
+    Buttons
+*/
+.addButton, .saveButton, .resetButton, .deleteButton {
+    color: white;
+    border-radius: 4px;
+}
+
+.addButton {
+    background-color: #198754;
+}
+
+.saveButton {
+    background-color: #0d6efd;
+}
+
+.resetButton {
+    background-color: #6c757d;
 }
 
 .deleteButton {
     background-color: #dc3545;
-    color: white;
-}
-
-.groupRow button {
-    float: right;
+    font-size: 12px;
 }
