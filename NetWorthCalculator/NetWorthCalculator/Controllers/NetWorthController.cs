@@ -7,6 +7,9 @@ using System.Text.Json.Serialization;
 
 namespace NetWorthCalculator.Controllers
 {
+    /// <summary>
+    /// Controller for net worth endpoints
+    /// </summary>
     [ApiController]
     [Route("networth")]
     public class NetWorthController : ControllerBase
@@ -20,9 +23,13 @@ namespace NetWorthCalculator.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+        /// <summary>
+        /// Returns the net worth json data
+        /// </summary>
+        /// <returns>List of section</returns>
         private List<Section> GetJsonData()
         {
-            // Create a new Section List object and deserialize the json file into it
+            // Create a new List of Sections
             List<Section> sections = new();
 
             try
@@ -33,8 +40,7 @@ namespace NetWorthCalculator.Controllers
                 // Read in the entire json file
                 string jsonData = System.IO.File.ReadAllText(path);
 
-                
-
+                // Make sure the json string is not null and then deserialize the data into the section list
                 if (jsonData != null)
                 {
                     sections = JsonSerializer.Deserialize<List<Section>>(jsonData);
@@ -51,43 +57,80 @@ namespace NetWorthCalculator.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns the net worth json as a section list
+        /// </summary>
+        /// <returns>Action Result containing the json object</returns>
         [HttpGet("GetData")]
         public IActionResult GetData()
         {
+            // Get the json data and save it into the section list
             List<Section> sections = GetJsonData();
 
-            if (sections != null)
-                return Ok(sections);
+            // If the list is null, then return not found
+            if (sections == null)
+                return NotFound();
 
-            return NotFound();
+            // Return the json
+            return Ok(sections);
         }
 
+        /// <summary>
+        /// Returns a net worth section
+        /// </summary>
+        /// <param name="sectionName">the section name to be returned</param>
+        /// <returns>Action Result containing the json object</returns>
         [HttpGet("GetSection")]
         public IActionResult GetSection(string sectionName)
         {
+            // Get the json data and save it into the section list
             List<Section> sections = GetJsonData();
 
-            if (sections != null)
-            {
-                Section section = sections.Find(x => x.Name == sectionName);
+            // Make sure the section list is not null
+            if (sections == null)
+                return NotFound();
 
-                if (section != null)
-                    return Ok(section);
-            }
+            // Look for the section to be returned by name
+            Section section = sections.Find(x => x.Name == sectionName);
 
-            return NotFound();
+            // Make sure the section is not null
+            if (section == null)
+                return NotFound();
+
+            // Return the section
+            return Ok(section);
         }
 
-        [HttpPost("SaveData")]
-        public IActionResult SaveData(List<Section> netWorthData)
+        /// <summary>
+        /// Updates a section inside the saved json file
+        /// </summary>
+        /// <param name="netWorthSection">the updated section to save</param>
+        /// <param name="sectionIndex">the index of the section to save</param>
+        /// <returns></returns>
+        [HttpPost("SaveSection")]
+        public IActionResult SaveSection([FromBody] Section netWorthSection, int sectionIndex)
         {
+            // Get the json data and save it into the section list
+            List<Section> sections = GetJsonData();
+
+            // Make sure the section list is not null
+            if (sections == null)
+                return NotFound();
+
+            // Update the section
+            sections[sectionIndex] = netWorthSection;
+
             try
             {
                 // Get the path to the json data file
                 string path = Path.Combine(_webHostEnvironment.ContentRootPath, "Data", "NetWorthData.json");
 
-                string NetWorthDataText = JsonSerializer.Serialize(netWorthData);
+                // Serialize the json object
+                string NetWorthDataText = JsonSerializer.Serialize(sections);
+
+                // Write the string out to the json file
                 System.IO.File.WriteAllText(path, NetWorthDataText);
+
                 return Ok();
             }
             catch (Exception ex)
@@ -96,35 +139,6 @@ namespace NetWorthCalculator.Controllers
 
                 return NotFound();
             }
-        }
-
-        [HttpPost("SaveSection")]
-        public IActionResult SaveSection([FromBody] Section netWorthSection, int sectionIndex)
-        {
-            List<Section> sections = GetJsonData();
-
-            if (sections != null)
-            {
-                sections[sectionIndex] = netWorthSection;
-
-                try
-                {
-                    // Get the path to the json data file
-                    string path = Path.Combine(_webHostEnvironment.ContentRootPath, "Data", "NetWorthData.json");
-
-                    string NetWorthDataText = JsonSerializer.Serialize(sections);
-                    System.IO.File.WriteAllText(path, NetWorthDataText);
-                    return Ok();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("Error saving json data", ex);
-
-                    return NotFound();
-                }
-            }
-
-            return NotFound();
         }
     }
 }

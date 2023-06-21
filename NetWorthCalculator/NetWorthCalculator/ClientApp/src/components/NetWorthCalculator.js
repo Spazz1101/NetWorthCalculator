@@ -27,8 +27,10 @@ export default function Home () {
      */
     async function saveNetWorthSection(sectionIndex) {
         await fetch('./networth/SaveSection?sectionIndex=' + sectionIndex, { method: 'POST', body: JSON.stringify(sections[sectionIndex]), headers: { 'Content-Type': 'application/json' } }).then((res) => {
-            console.log("Hi")
-            console.log(res)
+            // If the save was unsuccessful, then log a message stating there being an issue.
+            if (res.status !== 200) {
+                console.log("There was an issue saving the section");
+            }
         });
     }
 
@@ -160,6 +162,45 @@ export default function Home () {
         document.getElementById(sectionName + "Form").reset();
     }
 
+    /**
+     * This function deletes a section's group.
+     * @param {number} sectionIndex The section's index position
+     * @param {number} groupIndex The group's index position
+     */
+    function deleteGroup(sectionIndex, groupIndex) {
+        // Copy the current sections state array
+        let newSections = [...sections];
+
+        // Splice off the group to be removed
+        newSections[sectionIndex].Groups.splice(groupIndex, 1);
+
+        // Update the sections state with the new array
+        setSections(newSections);
+
+        // Recalculate the total values
+        calculateTotals();
+    }
+
+    /**
+     * This function deletes a group's category.
+     * @param {number} sectionIndex The section's index position
+     * @param {number} groupIndex The group's index position
+     * @param {number} categoryIndex The category's index position
+     */
+    function deleteCategory(sectionIndex, groupIndex, categoryIndex) {
+        // Copy the current sections state array
+        let newSections = [...sections];
+
+        // Splice off the category to be removed
+        newSections[sectionIndex].Groups[groupIndex].Categories.splice(categoryIndex, 1);
+
+        // Update the sections state with the new array
+        setSections(newSections);
+
+        // Recalculate the total values
+        calculateTotals();
+    }
+
     return (
         <div>
             <div className="pageHeader">
@@ -171,7 +212,7 @@ export default function Home () {
                         <div className="sectionHeader">
                             <h3>{section.Name}</h3>
                         </div>
-                        <Table sectionData={section} sectionIndex={sectionIndex} updateCategoryValue={updateCategoryValue} saveNetWorthSection={saveNetWorthSection} resetSectionForm={resetSectionForm} addGroup={addGroup} addCategory={addCategory} />
+                        <Table sectionData={section} sectionIndex={sectionIndex} updateCategoryValue={updateCategoryValue} saveNetWorthSection={saveNetWorthSection} resetSectionForm={resetSectionForm} addGroup={addGroup} addCategory={addCategory} deleteGroup={deleteGroup} deleteCategory={deleteCategory} />
                     </div>
                 )
             }

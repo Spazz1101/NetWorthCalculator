@@ -105,6 +105,39 @@ export default function Table(props) {
         }
     }
 
+    /**
+     * This function cofirms the users intent to delete a group before deleting it.
+     * @param {Event} e The button's onClick event
+     * @param {number} sectionIndex The section's index position
+     * @param {number} groupIndex The group's index position
+     */
+    function confirmGroupDelete(e, sectionIndex, groupIndex) {
+        // Prevent default which is submitting the form
+        e.preventDefault();
+
+        // Confirm that the user wants to delete the group before deleting it
+        if(window.confirm("Are you sure you want to delete this group?")) {
+            props.deleteGroup(sectionIndex, groupIndex);
+        }
+    }
+
+    /**
+     * This function cofirms the users intent to delete a category before deleting it.
+     * @param {Event} e The button's onClick event
+     * @param {number} sectionIndex The section's index position
+     * @param {number} groupIndex The group's index position
+     * @param {number} categoryIndex The category's index position
+     */
+    function confirmCategoryDelete(e, sectionIndex, groupIndex, categoryIndex) {
+        // Prevent default which is submitting the form
+        e.preventDefault();
+
+        // Confirm that the user wants to delete the category before deleting it
+        if(window.confirm("Are you sure you want to delete this category?")) {
+            props.deleteCategory(sectionIndex, groupIndex, categoryIndex);
+        }
+    }
+
     return (
         <div className="tableContainer">
             <form id={props.sectionData.Name + "Form"}>
@@ -122,7 +155,13 @@ export default function Table(props) {
                                 props.sectionData.Groups.map((group, groupIndex) =>
                                     <React.Fragment key={groupIndex}>
                                         <tr className="groupRow">
-                                            <td colSpan="2">{group.Name}</td>
+                                            <td colSpan="2">
+                                                <span>{group.Name}</span>
+                                                {
+                                                    edit &&
+                                                    <button className="deleteButton" onClick={(e) => confirmGroupDelete(e, props.sectionIndex, groupIndex)}>X</button>
+                                                }
+                                            </td>
                                         </tr>
                                         {
                                             Object.keys(group.Categories).length > 0 && group.Categories.map((category, categoryIndex) =>
@@ -131,7 +170,10 @@ export default function Table(props) {
                                                     <td className="categoryInput">
                                                         {
                                                             edit ?
-                                                                <span>{formatter.format(category.Value)}</span>
+                                                                <React.Fragment>
+                                                                    <span className="displayInputValue">{formatter.format(category.Value)}</span>
+                                                                    <button className="deleteButton" onClick={(e) => confirmCategoryDelete(e, props.sectionIndex, groupIndex, categoryIndex)}>X</button>
+                                                                </React.Fragment>
                                                             :
                                                                 <React.Fragment>
                                                                     <span>$</span>

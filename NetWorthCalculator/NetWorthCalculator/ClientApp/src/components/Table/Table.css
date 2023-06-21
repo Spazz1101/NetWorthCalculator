@@ -67,3 +67,19 @@ th.inputColumn {
 .newCategory button, .newGroup button {
     min-width: 120px;
 }
+
+
+.displayInputValue {
+    width: 100%;
+    text-align: end;
+    margin-right: 10px;
+}
+
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+.groupRow button {
+    float: right;
+}
