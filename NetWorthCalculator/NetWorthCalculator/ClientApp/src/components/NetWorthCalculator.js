@@ -2,7 +2,7 @@ import React from 'react';
 import Table from './Table/Table';
 import './NetWorthCalculator.css';
 
-export default function Home () {
+export default function NetWorthCalculator () {
     /**
      * The sections state stores the net worth json data.
      * currencyFormatter is used for formatting a number as currency.
