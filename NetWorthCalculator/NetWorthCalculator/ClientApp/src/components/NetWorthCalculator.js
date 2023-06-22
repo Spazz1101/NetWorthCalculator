@@ -98,9 +98,9 @@ export default function NetWorthCalculator () {
     }
 
     /**
-     * This function resets a sections values back to the last saved values for the section.
-     * @param {*} sectionName The section's name
-     * @param {*} sectionIndex The section's index position
+     * This function resets a section's category values back to the last saved values for the section.
+     * @param {string} sectionName The section's name
+     * @param {number} sectionIndex The section's index position
      */
     async function resetSectionForm(sectionName, sectionIndex) {
         // Fetch the section to reset from the json file
