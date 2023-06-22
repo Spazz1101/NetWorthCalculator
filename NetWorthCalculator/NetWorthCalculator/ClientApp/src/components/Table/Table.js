@@ -13,8 +13,8 @@ export default function Table(props) {
      * This function validates the number input's value.
      * The validation that is checked for is if the value is a number, is the number greater than or equal to 0, and are there only 2 decimal places.
      * @param {Event} e The input onChange event
-     * @param {*} groupIndex The group's index position
-     * @param {*} categoryIndex The category's index position
+     * @param {number} groupIndex The group's index position
+     * @param {number} categoryIndex The category's index position
      */
     function validateInput(e, groupIndex, categoryIndex) {
         // Get the current value from the input
@@ -98,7 +98,7 @@ export default function Table(props) {
     /**
      * This function validates a new category and then adds it to a group.
      * @param {Event} e The button's onClick event
-     * @param {*} groupIndex The group's index position
+     * @param {number} groupIndex The group's index position
      */
     function validateCategory(e, groupIndex) {
         // Prevent default which is submitting the form
